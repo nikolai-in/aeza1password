@@ -20,7 +20,6 @@ repos:
     rev: 6.1.0
     hooks:
       - id: flake8
-        args: [--darglint-ignore-regex, .*]
   - repo: https://github.com/PyCQA/isort
     rev: 5.12.0
     hooks:
