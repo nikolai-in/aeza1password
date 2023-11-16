@@ -6,6 +6,7 @@ import subprocess  # nosec B404
 import sys
 from os import getenv
 
+import requests
 from dotenv import load_dotenv
 
 logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.DEBUG)
@@ -57,12 +58,31 @@ def load_config() -> list:
     sys.exit(1)
 
 
+def aeza_get_services(api_key: str) -> dict:
+    """Get services from aeza.net
+     Make a GET call to AEZA_ENDPOINT + /services with X-API-KEY header and return JSON
+
+    Args:
+        api_key (str): API key to use
+
+    Returns:
+        dict: List of services
+    """
+    headers = {"X-API-KEY": api_key}
+    response = requests.get(f"{AEZA_ENDPOINT}/services", headers=headers, timeout=5)
+    return response.json()
+
+
 def main():
     """Main entry point of the app"""
     logging.debug("Starting aeza1password")
+    api_keys = load_config()
+
+    for api_key in api_keys:
+        services = aeza_get_services(api_key)
+        logging.debug(services)
 
 
 if __name__ == "__main__":
     run_checks()
-    load_config()
     main()
