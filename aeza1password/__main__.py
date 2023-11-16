@@ -2,7 +2,7 @@
 """aeza1password — CLI tool for syncing servers from aeza.net to 1password"""
 import logging
 import shutil
-import subprocess
+import subprocess  # nosec B404
 import sys
 from os import getenv
 
@@ -23,7 +23,9 @@ def check_for_op_cli():
 
 def check_for_op_login():
     """Check for 1Password cli login"""
-    if not subprocess.run(["op", "account", "list"], capture_output=True).stdout:
+    if not subprocess.run(
+        ["op", "account", "list"], capture_output=True
+    ).stdout:  # nosec B603, B607
         logging.error(
             "1Password cli not logged in\n"
             + "Please run `op signin <your.1password.com>`"
