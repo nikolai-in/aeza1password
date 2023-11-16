@@ -69,8 +69,12 @@ def aeza_get_services(api_key: str) -> dict:
         dict: List of services
     """
     headers = {"X-API-KEY": api_key}
-    response = requests.get(f"{AEZA_ENDPOINT}/services", headers=headers, timeout=5)
-    return response.json()
+    response = requests.get(
+        f"{AEZA_ENDPOINT}/services", headers=headers, timeout=5
+    ).json()
+    if response.get("error"):
+        logging.error(f"Error getting services: {response['error']['message']}")
+    return response
 
 
 def main():
