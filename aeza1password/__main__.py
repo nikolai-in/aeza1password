@@ -54,6 +54,24 @@ def op_check_for_vault(vault: str) -> bool:
     return True
 
 
+def op_create_vault(vault: str):
+    """Create 1Password vault
+
+    Args:
+        vault (str): Vault to create
+
+    Raises:
+        Exception: If vault creation fails
+    """
+    if subprocess.run(  # nosec B603, B607
+        ["op", "vault", "create", vault], capture_output=True
+    ).stdout:
+        logging.debug(f"1Password vault {vault} created")
+    else:
+        logging.error(f"1Password vault {vault} not created")
+        raise Exception(f"1Password vault {vault} not created")
+
+
 def run_checks():
     """Run checks to ensure op cli is ready"""
     op_check_for_cli()
