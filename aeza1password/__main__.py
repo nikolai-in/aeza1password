@@ -10,6 +10,8 @@ from dotenv import load_dotenv
 
 logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.DEBUG)
 
+AEZA_ENDPOINT = "https://my.aeza.net/api"
+
 
 def check_for_op_cli():
     """Check for 1Password cli"""
