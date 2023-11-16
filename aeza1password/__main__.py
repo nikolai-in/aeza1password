@@ -36,6 +36,24 @@ def op_check_for_login():
         sys.exit(1)
 
 
+def op_check_for_vault(vault: str) -> bool:
+    """Check for 1Password vault
+
+    Args:
+        vault (str): Vault to check for
+
+    Returns:
+        bool: True if vault exists, False if not
+    """
+    if not subprocess.run(
+        ["op", "vault", "get", vault], capture_output=True
+    ).stdout:  # nosec B603, B607
+        logging.debug(f"1Password vault {vault} not found")
+        return False
+    logging.debug(f"1Password vault {vault} exists")
+    return True
+
+
 def run_checks():
     """Run checks to ensure op cli is ready"""
     op_check_for_cli()
