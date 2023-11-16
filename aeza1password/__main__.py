@@ -81,10 +81,31 @@ def main():
     """Main entry point of the app"""
     logging.debug("Starting aeza1password")
     api_keys = load_config()
+    servers_total = []
 
-    for api_key in api_keys:
+    for i, api_key in enumerate(api_keys):
+        logging.debug(f"Processing API key {i + 1}/{len(api_keys)}")
         services = aeza_get_services(api_key)
-        logging.debug(services)
+        if services.get("error"):
+            logging.info(f"Skipping API key {i + 1} due to error")
+            continue
+        servers_i = [
+            item
+            for item in services["data"]["items"]
+            if item["product"]["type"] == "vps"
+        ]
+        if len(servers_i) == 0:
+            logging.warning(f"No servers found for API key {i + 1}")
+        logging.info(f"Found {len(servers_i)} servers for API key {i + 1}")
+        servers_total += servers_i
+
+    if not servers_total:
+        logging.error("No servers found")
+        sys.exit(1)
+
+    logging.info(
+        f"Found {len(servers_total)} servers in total for {len(api_keys)} API keys"
+    )
 
 
 if __name__ == "__main__":
