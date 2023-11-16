@@ -83,6 +83,42 @@ def op_create_vault(vault: str):
         raise Exception(f"1Password vault {vault} not created")
 
 
+def op_add_server(
+    name: str,
+    id: str,
+    root_pass: str,
+    fqdn: str,
+    root_login: str = "root",
+    add_user: bool = False,
+):
+    """Add server to 1Password
+
+    Args:
+        name (str): Server name
+        id (str): Server ID
+        root_pass (str): Server root password
+        fqdn (str): Server FQDN
+        root_login (str): Optional. Server root login. Defaults to "root".
+        add_user (bool): Optional. Add new user to 1Password. Defaults to False.
+    """
+    subprocess.run(  # nosec B603, B607
+        [
+            "op",
+            "item",
+            "create",
+            "--category=server",
+            f"--title={name}",
+            "--vault=aeza",
+            f"FQDN[text]={fqdn}",
+            f"Admin Console.admin console username[text]={root_login}",
+            f"Admin Console.console password={root_pass}",
+            f"Admin Console.billing panel URL[URL]=https://my.aeza.net/services/{id}",
+            # "--tags aeza1password",
+        ],
+        capture_output=True,
+    )
+
+
 def run_checks():
     """Run checks to ensure op cli is ready"""
     op_check_for_cli()
@@ -153,6 +189,18 @@ def main():
     logging.info(
         f"Found {len(servers_total)} servers in total for {len(api_keys)} API keys"
     )
+
+    if not op_check_for_vault("aeza"):
+        op_create_vault("aeza")
+
+    for server in servers_total:
+        logging.debug(f"Processing server {server['name']}")
+        op_add_server(
+            server["name"] + f" {AEZA_LOCATIONS[server['locationCode']]}",
+            server["id"],
+            server["secureParameters"]["data"]["password"],
+            server["ips"][0]["domain"],
+        )
 
 
 if __name__ == "__main__":
