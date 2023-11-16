@@ -14,7 +14,7 @@ logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.DEBUG)
 AEZA_ENDPOINT = "https://my.aeza.net/api"
 
 
-def check_for_op_cli():
+def op_check_for_cli():
     """Check for 1Password cli"""
     if not shutil.which("op"):
         logging.error(
@@ -38,7 +38,7 @@ def check_for_op_login():
 
 def run_checks():
     """Run checks to ensure op cli is ready"""
-    check_for_op_cli()
+    op_check_for_cli()
     check_for_op_login()
 
 
