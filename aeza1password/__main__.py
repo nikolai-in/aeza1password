@@ -24,7 +24,7 @@ def op_check_for_cli():
         sys.exit(1)
 
 
-def check_for_op_login():
+def op_check_for_login():
     """Check for 1Password cli login"""
     if not subprocess.run(
         ["op", "account", "list"], capture_output=True
@@ -39,7 +39,7 @@ def check_for_op_login():
 def run_checks():
     """Run checks to ensure op cli is ready"""
     op_check_for_cli()
-    check_for_op_login()
+    op_check_for_login()
 
 
 def load_config() -> list:
