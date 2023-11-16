@@ -3,11 +3,8 @@ name = "aeza1password"
 version = "0.1.0"
 description = "CLI tool for syncing servers from aeza.net to 1password"
 repository = "https://github.com/nikolai-in/aeza1password"
-
 authors = ["nikolai.in <nikolai-in@dousen.ru>"]
 readme = "README.md"
-packages = [{include = "aeza1password", from = "src"}]
-
 [tool.poetry.dependencies]
 python = "^3.12"
 
