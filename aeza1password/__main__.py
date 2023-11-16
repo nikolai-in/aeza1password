@@ -41,13 +41,20 @@ def run_checks():
     check_for_op_login()
 
 
-def load_config():
-    """Load configuration from .env file"""
+def load_config() -> list:
+    """Load configuration from .env file
+
+    Returns:
+        list: List of API keys
+    """
     load_dotenv(".aeza1password.env")
     value = getenv("APIKEY")
     if type(value) is str:
         api_keys = value.split(",")
         logging.debug(f"Loaded {len(api_keys)} API keys")
+        return api_keys
+    logging.error("No API keys found in .aeza1password.env or environment")
+    sys.exit(1)
 
 
 def main():
