@@ -13,6 +13,17 @@ logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.DEBUG)
 
 AEZA_ENDPOINT = "https://my.aeza.net/api"
 
+AEZA_LOCATIONS = {
+    "us": "🇺🇸",
+    "at": "🇦🇹",
+    "fr": "🇫🇷",
+    "de": "🇩🇪",
+    "nl": "🇳🇱",
+    "se": "🇸🇪",
+    "fi": "🇫🇮",
+    "ru": "🇷🇺",
+}
+
 
 def op_check_for_cli():
     """Check for 1Password cli"""
