@@ -42,3 +42,7 @@ repos:
       - id: python-safety-dependencies-check
         files: pyproject.toml
         args: ["--short-report"]
+  - repo: https://github.com/python-poetry/poetry-plugin-export/
+    rev: 1.6.0
+    hooks:
+      - id: poetry-export
