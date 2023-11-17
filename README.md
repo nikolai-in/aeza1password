@@ -1,4 +1,3 @@
-
 <h1 align="center">aeza1password</h1>
 <blockquote align="center">
   CLI tool for syncing servers from aeza.net to 1password
@@ -7,6 +6,14 @@
 <p align="center">
   <img src="https://github.com/nikolai-in/aeza1password/blob/master/aeza1password.png?raw=true" alt="Sublime's custom image"/>
 </p>
+
+## Usage/Examples
+
+```bash
+git clone && cd aeza1password && \
+pip install -r requirements.txt
+python aeza1password --help
+```
 
 ## Trademark Disclaimer
 
