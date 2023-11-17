@@ -174,7 +174,7 @@ def aeza_get_services(api_key: str) -> dict:
     help="Create new server user in 1Password",
 )
 def main(create_user: bool):
-    """Main entry point of the app
+    """A CLI tool for syncing servers from aeza.net to 1password"
 
     Args:
         create_user (bool): Create new server user in 1Password
