@@ -203,7 +203,7 @@ def aeza_get_services(api_key: str) -> dict:
 )
 @click.argument("api_keys", nargs=-1)
 def main(create_user: bool, dry_run: bool, debug: bool, env: bool, api_keys: list):
-    """A CLI tool for syncing servers from aeza.net to 1password"
+    """A CLI tool for syncing servers from aeza.net to 1password\f
 
     Args:
         create_user (bool): Create new server user in 1Password
