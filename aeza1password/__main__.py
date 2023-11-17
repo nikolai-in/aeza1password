@@ -83,11 +83,12 @@ def op_create_vault(vault: str):
         raise Exception(f"1Password vault {vault} not created")
 
 
-def op_add_server(server: dict):
+def op_add_server(server: dict, create_user: bool = False):
     """Add server to 1Password
 
     Args:
         server (dict): Server to add
+        create_user (bool): Create user in 1Password. Defaults to False.
     """
     ips = []
     for i, ip in enumerate(server["ips"]):
@@ -96,24 +97,30 @@ def op_add_server(server: dict):
 
     ips.append(f"IPv6.ip address[URL]={server['ipv6'][0]['value']}")
 
-    op_command = [
-        "op",
-        "item",
-        "create",
-        "--category=server",
-        f"--title={server['name']} {AEZA_LOCATIONS[server['locationCode']]}",
-        "--vault=aeza",
-        f"ssh[URL]=ssh://{server['ip']}",
-        f"Admin Console.admin console username[text]={server['parameters']['username']}",
-        f"Admin Console.console password={server['secureParameters']['data']['password']}",
-        f"Admin Console.billing panel URL[URL]=https://my.aeza.net/services/{server['id']}",
-        "--tags=aeza1password",
-    ] + ips
-
-    logging.debug(f"Running command: {' '.join(op_command)}")
+    if create_user:
+        user = [
+            f"username={getenv('USER')}",
+            f"password={subprocess.run(['openssl', 'rand', '-base64', '18'], capture_output=True).stdout.decode('utf-8').strip()}",  # nosec B603, B607
+        ]
+    else:
+        user = []
 
     subprocess.run(  # nosec B603, B607
-        op_command,
+        [
+            "op",
+            "item",
+            "create",
+            "--category=server",
+            f"--title={server['name']} {AEZA_LOCATIONS[server['locationCode']]}",
+            "--vault=aeza",
+            f"ssh[URL]=ssh://{server['ip']}",
+            f"Admin Console.admin console username[text]={server['parameters']['username']}",
+            f"Admin Console.console password={server['secureParameters']['data']['password']}",
+            f"Admin Console.billing panel URL[URL]=https://my.aeza.net/services/{server['id']}",
+            "--tags=aeza1password",
+        ]
+        + ips
+        + user,
         capture_output=True,
     )
 
