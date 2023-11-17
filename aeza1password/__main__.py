@@ -202,7 +202,9 @@ def aeza_get_services(api_key: str) -> dict:
     help="Load configuration from .env file or environment",
 )
 @click.argument("api_keys", nargs=-1)
-def main(create_user: bool, dry_run: bool, debug: bool, env: bool, api_keys: list):
+def main(  # noqa C901
+    create_user: bool, dry_run: bool, debug: bool, env: bool, api_keys: list
+):
     """A CLI tool for syncing servers from aeza.net to 1password\f
 
     Args:
@@ -224,9 +226,15 @@ def main(create_user: bool, dry_run: bool, debug: bool, env: bool, api_keys: lis
     logging.debug("Starting aeza1password")
     if env:
         api_keys = load_config()
-    if not api_keys and env:
-        logging.error("No API keys found")
-        sys.exit(1)
+        if not api_keys:
+            logging.error("No API keys found")
+            sys.exit(1)
+
+    if not api_keys and not env:
+        api_keys = click.prompt(
+            "Please enter your API keys (comma separated)", type=str
+        ).split(",")
+
     servers_total = []
 
     for i, api_key in enumerate(api_keys):
