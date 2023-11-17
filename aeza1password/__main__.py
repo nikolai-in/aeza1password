@@ -220,13 +220,13 @@ def main(create_user: bool, dry_run: bool, debug: bool, env: bool, api_keys: lis
     if env and api_keys:
         logging.error("Cannot use --env and pass API keys")
         sys.exit(1)
-    if not env and not api_keys:
-        logging.error("Must use --env or pass API keys")
-        sys.exit(1)
 
     logging.debug("Starting aeza1password")
     if env:
         api_keys = load_config()
+    if not api_keys and env:
+        logging.error("No API keys found")
+        sys.exit(1)
     servers_total = []
 
     for i, api_key in enumerate(api_keys):
