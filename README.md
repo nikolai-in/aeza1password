@@ -18,12 +18,7 @@ python aeza1password --help
 ```text
 Usage: aeza1password [OPTIONS] [API_KEYS]...
 
-  A CLI tool for syncing servers from aeza.net to 1password"
-
-  Args:     create_user (bool): Create new server user in 1Password
-  dry_run (bool): Dry run (don't actually create anything)     debug (bool):
-  Enable debug logging     env (bool): Load configuration from .env file or
-  environment     api_keys (list): List of API keys
+  A CLI tool for syncing servers from aeza.net to 1password
 
 Options:
   --version      Show the version and exit.
