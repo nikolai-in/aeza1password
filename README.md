@@ -15,6 +15,25 @@ pip install -r requirements.txt
 python aeza1password --help
 ```
 
+```text
+Usage: aeza1password [OPTIONS] [API_KEYS]...
+
+  A CLI tool for syncing servers from aeza.net to 1password"
+
+  Args:     create_user (bool): Create new server user in 1Password
+  dry_run (bool): Dry run (don't actually create anything)     debug (bool):
+  Enable debug logging     env (bool): Load configuration from .env file or
+  environment     api_keys (list): List of API keys
+
+Options:
+  --version      Show the version and exit.
+  --create-user  Create new server user in 1Password
+  --dry-run      Dry run (don't actually create anything)
+  --debug        Enable debug logging
+  -e, --env      Load configuration from .env file or environment
+  --help         Show this message and exit.
+```
+
 ## Trademark Disclaimer
 
 All trademarks, logos and brand names are the property of their respective owners. All company, product and service names used in this website are for identification purposes only. Use of these names,trademarks and brands does not imply endorsement.
