@@ -194,20 +194,39 @@ def aeza_get_services(api_key: str) -> dict:
     default=False,
     help="Enable debug logging",
 )
-def main(create_user: bool, dry_run: bool, debug: bool):
+@click.option(
+    "-e",
+    "--env",
+    is_flag=True,
+    default=False,
+    help="Load configuration from .env file or environment",
+)
+@click.argument("api_keys", nargs=-1)
+def main(create_user: bool, dry_run: bool, debug: bool, env: bool, api_keys: list):
     """A CLI tool for syncing servers from aeza.net to 1password"
 
     Args:
         create_user (bool): Create new server user in 1Password
         dry_run (bool): Dry run (don't actually create anything)
         debug (bool): Enable debug logging
+        env (bool): Load configuration from .env file or environment
+        api_keys (list): List of API keys
     """
     logging.basicConfig(
         format="%(levelname)s:%(message)s",
         level=logging.DEBUG if debug else logging.INFO,
     )
+
+    if env and api_keys:
+        logging.error("Cannot use --env and pass API keys")
+        sys.exit(1)
+    if not env and not api_keys:
+        logging.error("Must use --env or pass API keys")
+        sys.exit(1)
+
     logging.debug("Starting aeza1password")
-    api_keys = load_config()
+    if env:
+        api_keys = load_config()
     servers_total = []
 
     for i, api_key in enumerate(api_keys):
@@ -238,7 +257,7 @@ def main(create_user: bool, dry_run: bool, debug: bool):
         op_create_vault("aeza")
 
     for server in servers_total:
-        logging.debug(f"Processing server {server['name']}")
+        logging.info(f"Processing server {server['name']}")
         op_add_server(server, create_user, dry_run)
 
 
