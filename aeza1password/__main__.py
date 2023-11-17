@@ -312,12 +312,18 @@ def main(  # noqa C901
         f"Found {len(servers_total)} servers in total for {len(api_keys)} API keys"
     )
 
-    if not op_check_for_vault("aeza"):
+    if not op_check_for_vault("aeza") and not dry_run:
         op_create_vault("aeza")
 
     for server in servers_total:
         logging.info(f"Processing server {server['name']}")
-        op_add_server(server, create_user, dry_run, user_name, user_password)
+        op_add_server(
+            server=server,
+            create_user=create_user,
+            dry_run=dry_run,
+            user_name=user_name,
+            user_password=user_password,
+        )
 
 
 if __name__ == "__main__":
