@@ -82,12 +82,13 @@ def op_create_vault(vault: str):
         raise Exception(f"1Password vault {vault} not created")
 
 
-def op_add_server(server: dict, create_user: bool = False):
+def op_add_server(server: dict, create_user: bool = False, dry_run: bool = False):
     """Add server to 1Password
 
     Args:
         server (dict): Server to add
         create_user (bool): Create user in 1Password. Defaults to False.
+        dry_run (bool): Dry run (don't actually create anything). Defaults to False.
     """
     ips = []
     for i, ip in enumerate(server["ips"]):
@@ -104,22 +105,30 @@ def op_add_server(server: dict, create_user: bool = False):
     else:
         user = []
 
+    command = [
+        "op",
+        "item",
+        "create",
+        "--category=server",
+        f"--title={server['name']} {AEZA_LOCATIONS[server['locationCode']]}",
+        "--vault=aeza",
+        f"ssh[URL]=ssh://{server['ip']}",
+        f"Admin Console.admin console username[text]={server['parameters']['username']}",
+        f"Admin Console.console password={server['secureParameters']['data']['password']}",
+        f"Admin Console.billing panel URL[URL]=https://my.aeza.net/services/{server['id']}",
+        "--tags=aeza1password",
+    ]
+    command += ips
+    command += user
+
+    if dry_run:
+        logging.info(f"Dry run: {command}")
+        return
+
+    logging.debug(f"Dry run: {command}")
+
     subprocess.run(  # nosec B603, B607
-        [
-            "op",
-            "item",
-            "create",
-            "--category=server",
-            f"--title={server['name']} {AEZA_LOCATIONS[server['locationCode']]}",
-            "--vault=aeza",
-            f"ssh[URL]=ssh://{server['ip']}",
-            f"Admin Console.admin console username[text]={server['parameters']['username']}",
-            f"Admin Console.console password={server['secureParameters']['data']['password']}",
-            f"Admin Console.billing panel URL[URL]=https://my.aeza.net/services/{server['id']}",
-            "--tags=aeza1password",
-        ]
-        + ips
-        + user,
+        command,
         capture_output=True,
     )
 
@@ -174,16 +183,23 @@ def aeza_get_services(api_key: str) -> dict:
     help="Create new server user in 1Password",
 )
 @click.option(
+    "--dry-run",
+    is_flag=True,
+    default=False,
+    help="Dry run (don't actually create anything)",
+)
+@click.option(
     "--debug",
     is_flag=True,
     default=False,
     help="Enable debug logging",
 )
-def main(create_user: bool, debug: bool):
+def main(create_user: bool, dry_run: bool, debug: bool):
     """A CLI tool for syncing servers from aeza.net to 1password"
 
     Args:
         create_user (bool): Create new server user in 1Password
+        dry_run (bool): Dry run (don't actually create anything)
         debug (bool): Enable debug logging
     """
     logging.basicConfig(
@@ -223,7 +239,7 @@ def main(create_user: bool, debug: bool):
 
     for server in servers_total:
         logging.debug(f"Processing server {server['name']}")
-        op_add_server(server, create_user)
+        op_add_server(server, create_user, dry_run)
 
 
 if __name__ == "__main__":
