@@ -173,13 +173,23 @@ def aeza_get_services(api_key: str) -> dict:
     default=False,
     help="Create new server user in 1Password",
 )
-def main(create_user: bool):
+@click.option(
+    "--debug",
+    is_flag=True,
+    default=False,
+    help="Enable debug logging",
+)
+def main(create_user: bool, debug: bool):
     """A CLI tool for syncing servers from aeza.net to 1password"
 
     Args:
         create_user (bool): Create new server user in 1Password
+        debug (bool): Enable debug logging
     """
-    logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.DEBUG)
+    logging.basicConfig(
+        format="%(levelname)s:%(message)s",
+        level=logging.DEBUG if debug else logging.INFO,
+    )
     logging.debug("Starting aeza1password")
     api_keys = load_config()
     servers_total = []
