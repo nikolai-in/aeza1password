@@ -9,8 +9,6 @@ from os import getenv
 import requests
 from dotenv import load_dotenv
 
-logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.DEBUG)
-
 AEZA_ENDPOINT = "https://my.aeza.net/api"
 
 AEZA_LOCATIONS = {
@@ -168,6 +166,7 @@ def aeza_get_services(api_key: str) -> dict:
 
 def main():
     """Main entry point of the app"""
+    logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.DEBUG)
     logging.debug("Starting aeza1password")
     api_keys = load_config()
     servers_total = []
