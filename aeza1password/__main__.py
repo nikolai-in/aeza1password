@@ -82,11 +82,46 @@ def op_create_vault(vault: str):
         raise Exception(f"1Password vault {vault} not created")
 
 
-def op_add_server(server: dict, create_user: bool = False, dry_run: bool = False):
+def new_user(user_name: str, user_password) -> list:
+    """Create new user for server
+
+    Args:
+        user_name (str): Username
+        user_password (str): Password
+
+    Returns:
+        list: List of user details
+    """
+    if not user_password:
+        user_password = (
+            subprocess.run(
+                ["openssl", "rand", "-base64", "18"],  # nosec B603, B607
+                capture_output=True,
+            )
+            .stdout.decode("utf-8")
+            .strip()
+        )
+    user = [
+        f"username={user_name}",
+        f"password={user_password}",
+    ]
+
+    return user
+
+
+def op_add_server(
+    server: dict,
+    user_name: str,
+    user_password: str,
+    create_user: bool = False,
+    dry_run: bool = False,
+):
     """Add server to 1Password
 
     Args:
         server (dict): Server to add
+        user_name (str): Username
+        user_password (str): Password
         create_user (bool): Create user in 1Password. Defaults to False.
         dry_run (bool): Dry run (don't actually create anything). Defaults to False.
     """
@@ -98,10 +133,7 @@ def op_add_server(server: dict, create_user: bool = False, dry_run: bool = False
     ips.append(f"IPv6.ip address[URL]={server['ipv6'][0]['value']}")
 
     if create_user:
-        user = [
-            f"username={getenv('USER')}",
-            f"password={subprocess.run(['openssl', 'rand', '-base64', '18'], capture_output=True).stdout.decode('utf-8').strip()}",  # nosec B603, B607
-        ]
+        user = new_user(user_name, user_password)
     else:
         user = []
 
@@ -183,6 +215,17 @@ def aeza_get_services(api_key: str) -> dict:
     help="Create new server user in 1Password",
 )
 @click.option(
+    "--user-name",
+    default=getenv("USER"),
+    help="username for use with --create-user",
+)
+@click.password_option(
+    "--user-password",
+    help="single password for on all servers, option for use with --create-user",
+    default="",
+    prompt_required=False,
+)
+@click.option(
     "--dry-run",
     is_flag=True,
     default=False,
@@ -203,12 +246,20 @@ def aeza_get_services(api_key: str) -> dict:
 )
 @click.argument("api_keys", nargs=-1)
 def main(  # noqa C901
-    create_user: bool, dry_run: bool, debug: bool, env: bool, api_keys: list
+    create_user: bool,
+    user_name: str,
+    user_password: str,
+    dry_run: bool,
+    debug: bool,
+    env: bool,
+    api_keys: list,
 ):
     """A CLI tool for syncing servers from aeza.net to 1password\f
 
     Args:
         create_user (bool): Create new server user in 1Password
+        user_name (str): username for use with --create-user
+        user_password (str): single password for on all servers, option for use with --create-user
         dry_run (bool): Dry run (don't actually create anything)
         debug (bool): Enable debug logging
         env (bool): Load configuration from .env file or environment
@@ -266,7 +317,7 @@ def main(  # noqa C901
 
     for server in servers_total:
         logging.info(f"Processing server {server['name']}")
-        op_add_server(server, create_user, dry_run)
+        op_add_server(server, create_user, dry_run, user_name, user_password)
 
 
 if __name__ == "__main__":
