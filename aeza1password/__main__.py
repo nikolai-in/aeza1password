@@ -6,6 +6,7 @@ import subprocess  # nosec B404
 import sys
 from os import getenv
 
+import click
 import requests
 from dotenv import load_dotenv
 
@@ -164,6 +165,8 @@ def aeza_get_services(api_key: str) -> dict:
     return response
 
 
+@click.command()
+@click.version_option()
 def main():
     """Main entry point of the app"""
     logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.DEBUG)
@@ -205,4 +208,4 @@ def main():
 
 if __name__ == "__main__":
     run_checks()
-    main()
+    main(prog_name="aeza1password")
