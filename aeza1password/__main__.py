@@ -167,8 +167,18 @@ def aeza_get_services(api_key: str) -> dict:
 
 @click.command()
 @click.version_option()
-def main():
-    """Main entry point of the app"""
+@click.option(
+    "--create-user",
+    is_flag=True,
+    default=False,
+    help="Create new server user in 1Password",
+)
+def main(create_user: bool):
+    """Main entry point of the app
+
+    Args:
+        create_user (bool): Create new server user in 1Password
+    """
     logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.DEBUG)
     logging.debug("Starting aeza1password")
     api_keys = load_config()
@@ -203,7 +213,7 @@ def main():
 
     for server in servers_total:
         logging.debug(f"Processing server {server['name']}")
-        op_add_server(server)
+        op_add_server(server, create_user)
 
 
 if __name__ == "__main__":
