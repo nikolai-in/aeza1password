@@ -5,10 +5,13 @@ import shutil
 import subprocess  # nosec B404
 import sys
 from os import getenv
+from typing import List
 
 import click
 import requests
 from dotenv import load_dotenv
+
+from aeza1password.utils import Server
 
 AEZA_ENDPOINT = "https://my.aeza.net/api"
 
@@ -124,6 +127,39 @@ def op_add_server(
         command,
         capture_output=True,
     )
+
+
+def server_to_op(server: Server, vault: str = "aeza") -> List[str]:
+    """Convert server to 1Password item.
+
+    Args:
+        server (Server): Server to convert.
+        vault (str): Vault to add server to. Defaults to "aeza".
+
+    Returns:
+        List[str]: List of 1Password cli arguments.
+    """
+
+    return [
+        "op",
+        "item",
+        "create",
+        "--category=server",
+        f"--title={server.name} {server.location.flag}",
+        "--vault=aeza",
+        f"URL=https://aeza.net/services/{server.service_id}",
+        f"username={server.admin_username}",
+        f"password={server.admin_password}",
+        f"email={server.email}",
+        f"notesPlain=OS: {server.os}\nCPU: {server.cpu}\nRAM: {server.ram}\nStorage: {server.storage}\n",
+        "--tags=aeza,aeza1password",
+    ] + [
+        f"IP addresses.ip address {i} = {ip.address}"
+        f"IP addresses.domain {i} = {ip.domain}"
+        if ip.domain
+        else f"IP addresses.ip address {i} = {ip.address}"
+        for i, ip in enumerate(server.ip_address)
+    ]
 
 
 def run_checks():
