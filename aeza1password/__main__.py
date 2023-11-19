@@ -109,6 +109,12 @@ def server_to_op(server: Server, vault: str = "aeza") -> List[str]:
         List[str]: List of 1Password cli arguments.
     """
 
+    ip_addresses = []
+    for i, ip in enumerate(server.ip_address):
+        ip_addresses.append(f"IP addresses.ip address {i}[text]={ip.address}")
+        if ip.domain:
+            ip_addresses.append(f"IP addresses.domain {i}[text]={ip.domain}")
+
     return [
         "op",
         "item",
@@ -119,16 +125,10 @@ def server_to_op(server: Server, vault: str = "aeza") -> List[str]:
         f"URL=https://aeza.net/services/{server.service_id}",
         f"username={server.admin_username}",
         f"password={server.admin_password}",
-        f"email={server.email}",
-        f"notesPlain=OS: {server.os}\nCPU: {server.cpu}\nRAM: {server.ram}\nStorage: {server.storage}\n",
+        f"email[text]={server.email}",
+        f"notesPlain=OS: {server.os}\nCPU: {server.cpu} cores\nRAM: {server.ram} GB\nStorage: {server.storage} GB\n",
         "--tags=aeza,aeza1password",
-    ] + [
-        f"IP addresses.ip address {i} = {ip.address}"
-        f"IP addresses.domain {i} = {ip.domain}"
-        if ip.domain
-        else f"IP addresses.ip address {i} = {ip.address}"
-        for i, ip in enumerate(server.ip_address)
-    ]
+    ] + ip_addresses
 
 
 def run_checks():
