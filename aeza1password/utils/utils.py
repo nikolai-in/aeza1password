@@ -1,5 +1,7 @@
 """Utility functions and classes for aeza1password"""
 from dataclasses import dataclass
+from typing import List
+from unicodedata import lookup
 
 
 @dataclass
@@ -50,3 +52,75 @@ class OperatingSystem:
 
     def __str__(self):
         return self.name or str(self.id)
+
+
+@dataclass
+class Location:
+    """Dataclass for location
+
+    Args:
+        name (str): Location name
+        flag (str): Location flag in emoji.
+                    Generated from name with unicode regional indicator symbols.
+    """
+
+    name: str
+    flag: str = None
+
+    def __post_init__(self):
+        """Sets flag from name"""
+        self.flag = "".join(
+            [lookup(f"REGIONAL INDICATOR SYMBOL LETTER {c.upper()}") for c in self.name]
+        )
+
+    def __str__(self):
+        """Returns name and flag
+
+        Returns:
+            str: name and flag
+
+        Example:
+            >>> location = Location("US)
+            >>> print(location)
+            US 🇺🇸
+        """
+        return f"{self.name} {self.flag}"
+
+
+@dataclass
+class IP_address:
+    """Dataclass for IP address
+
+    Args:
+        address (str): IP address
+        domain (str): Domain name. Defaults to None.
+    """
+
+    address: str
+    domain: str = None
+
+
+@dataclass
+class Server:
+    """Dataclass for server
+
+    Args:
+        service_id (int): Aeza service id
+        name (str): Server name
+        ip_address (List[IP_address]): List of IP addresses
+        location (Location): Location
+        os (str): Operating system
+        cpu (str): CPU
+        ram (str): RAM
+        storage (str): Storage
+    """
+
+    service_id: int
+    name: str
+    ip_address: List[IP_address]
+    location: Location
+    os: str
+    cpu: str
+    ram: str
+    storage: str
+    email: str = None
