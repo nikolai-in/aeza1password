@@ -27,7 +27,10 @@ def log_error_and_exit(message: str):
 
 
 def op_check_for_cli():
-    """Check for 1Password cli."""
+    """Check for 1Password cli.
+
+    Tries to call op cli and exits if it is not found.
+    """
     if not shutil.which("op"):
         log_error_and_exit(
             "1Password cli not found in path\n"
@@ -36,7 +39,10 @@ def op_check_for_cli():
 
 
 def op_check_for_login():
-    """Check for 1Password cli login."""
+    """Check for 1Password cli login.
+
+    Logs error and exits if not logged in.
+    """
     if not subprocess.run(
         ["op", "account", "list"], capture_output=True
     ).stdout:  # nosec B603, B607
