@@ -20,14 +20,14 @@ def log_error_and_exit(message: str):
     """Logs error and exits.
 
     Args:
-        message (str): Error message
+        message (str): Error message.
     """
     logging.error(message)
     sys.exit(1)
 
 
 def op_check_for_cli():
-    """Check for 1Password cli"""
+    """Check for 1Password cli."""
     if not shutil.which("op"):
         log_error_and_exit(
             "1Password cli not found in path\n"
@@ -36,7 +36,7 @@ def op_check_for_cli():
 
 
 def op_check_for_login():
-    """Check for 1Password cli login"""
+    """Check for 1Password cli login."""
     if not subprocess.run(
         ["op", "account", "list"], capture_output=True
     ).stdout:  # nosec B603, B607
@@ -47,13 +47,13 @@ def op_check_for_login():
 
 
 def op_check_for_vault(vault: str) -> bool:
-    """Check for 1Password vault
+    """Check for 1Password vault.
 
     Args:
-        vault (str): Vault to check for
+        vault (str): Vault to check for.
 
     Returns:
-        bool: True if vault exists, False if not
+        bool: True if vault exists, False if not.
     """
     if not subprocess.run(
         ["op", "vault", "get", vault], capture_output=True
@@ -65,13 +65,13 @@ def op_check_for_vault(vault: str) -> bool:
 
 
 def op_create_vault(vault: str):
-    """Create 1Password vault
+    """Create 1Password vault.
 
     Args:
-        vault (str): Vault to create
+        vault (str): Vault to create.
 
     Raises:
-        Exception: If vault creation fails
+        Exception: If vault creation fails.
     """
     if subprocess.run(  # nosec B603, B607
         ["op", "vault", "create", vault], capture_output=True
@@ -86,10 +86,10 @@ def op_add_server(
     server: Server,
     dry_run: bool = False,
 ):
-    """Add server to 1Password
+    """Add server to 1Password.
 
     Args:
-        server (Server): Server to add
+        server (Server): Server to add.
         dry_run (bool): Dry run (don't actually create anything). Defaults to False.
     """
     command = server_to_op(server)
@@ -140,16 +140,16 @@ def server_to_op(server: Server, vault: str = "aeza") -> List[str]:
 
 
 def run_checks():
-    """Run checks to ensure op cli is ready"""
+    """Run checks to ensure op cli is ready."""
     op_check_for_cli()
     op_check_for_login()
 
 
 def load_config() -> list:
-    """Load configuration from .env file
+    """Load configuration from .env file.
 
     Returns:
-        list: List of API keys
+        list: List of API keys.
     """
     load_dotenv(".aeza1password.env")
     value = getenv("APIKEY")
@@ -161,14 +161,14 @@ def load_config() -> list:
 
 
 def aeza_get_services(api_key: str) -> dict:
-    """Get services from aeza.net
-     Make a GET call to AEZA_ENDPOINT + /services with X-API-KEY header and return JSON
+    """Get services from aeza.net.
+     Make a GET call to AEZA_ENDPOINT + /services with X-API-KEY header and return JSON.
 
     Args:
-        api_key (str): API key to use
+        api_key (str): API key to use.
 
     Returns:
-        dict: List of services
+        dict: List of services.
     """
     headers = {"X-API-KEY": api_key}
     try:
@@ -203,7 +203,7 @@ def load_api_keys(env: bool, api_keys: list) -> List[str]:
         api_keys (list): List of API keys.
 
     Returns:
-        List[str]: List of API keys
+        List[str]: List of API keys.
     """
     if env and api_keys:
         log_error_and_exit("Cannot use --env and pass API keys")
@@ -225,10 +225,10 @@ def process_servers(api_keys: list) -> List[Server]:
     """Process servers from aeza.net.
 
     Args:
-        api_keys (list): List of API keys
+        api_keys (list): List of API keys.
 
     Returns:
-        List[Server]: List of servers
+        List[Server]: List of servers.
     """
     servers_total = []
     for i, api_key in enumerate(api_keys):
