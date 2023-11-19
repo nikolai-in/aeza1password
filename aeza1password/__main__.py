@@ -281,7 +281,7 @@ def add_servers(servers_total: list, dry_run: bool, api_keys: List[str] = None):
     help="Load configuration from .aeza1password.env file or environment",
 )
 @click.argument("api_keys", nargs=-1)
-def main(  # noqa C901
+def main(
     dry_run: bool,
     debug: bool,
     env: bool,
