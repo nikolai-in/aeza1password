@@ -16,14 +16,23 @@ from aeza1password.utils import IP_address, Location, OperatingSystem, Server
 AEZA_ENDPOINT = "https://my.aeza.net/api"
 
 
+def log_error_and_exit(message: str):
+    """Logs error and exits.
+
+    Args:
+        message (str): Error message
+    """
+    logging.error(message)
+    sys.exit(1)
+
+
 def op_check_for_cli():
     """Check for 1Password cli"""
     if not shutil.which("op"):
-        logging.error(
+        log_error_and_exit(
             "1Password cli not found in path\n"
             + "Please install it https://1password.com/downloads/command-line/"
         )
-        sys.exit(1)
 
 
 def op_check_for_login():
@@ -31,11 +40,10 @@ def op_check_for_login():
     if not subprocess.run(
         ["op", "account", "list"], capture_output=True
     ).stdout:  # nosec B603, B607
-        logging.error(
+        log_error_and_exit(
             "1Password cli not logged in\n"
             + "Please run `op signin <your.1password.com>`"
         )
-        sys.exit(1)
 
 
 def op_check_for_vault(vault: str) -> bool:
@@ -149,8 +157,7 @@ def load_config() -> list:
         api_keys = value.split(",")
         logging.debug(f"Loaded {len(api_keys)} API keys")
         return api_keys
-    logging.error("No API keys found in .aeza1password.env or environment")
-    sys.exit(1)
+    log_error_and_exit("No API keys found in .aeza1password.env or environment")
 
 
 def aeza_get_services(api_key: str) -> dict:
@@ -199,14 +206,12 @@ def load_api_keys(env: bool, api_keys: list) -> List[str]:
         List[str]: List of API keys
     """
     if env and api_keys:
-        logging.error("Cannot use --env and pass API keys")
-        sys.exit(1)
+        log_error_and_exit("Cannot use --env and pass API keys")
 
     if env:
         api_keys = load_config()
         if not api_keys:
-            logging.error("No API keys found")
-            sys.exit(1)
+            log_error_and_exit("No API keys found")
 
     if not api_keys and not env:
         api_keys = click.prompt(
@@ -274,8 +279,7 @@ def add_servers(servers_total: list, dry_run: bool, api_keys: List[str] = None) 
         api_keys (List[str]): List of API keys. Defaults to None.
     """
     if not servers_total:
-        logging.error("No servers found")
-        sys.exit(1)
+        log_error_and_exit("No servers found")
 
     logging.info(
         f"Found {len(servers_total)} servers in total for {len(api_keys)} API keys"
