@@ -82,47 +82,14 @@ def op_create_vault(vault: str):
         raise Exception(f"1Password vault {vault} not created")
 
 
-def new_user(user_name: str, user_password) -> list:
-    """Create new user for server
-
-    Args:
-        user_name (str): Username
-        user_password (str): Password
-
-    Returns:
-        list: List of user details
-    """
-    if not user_password:
-        user_password = (
-            subprocess.run(
-                ["openssl", "rand", "-base64", "18"],  # nosec B603, B607
-                capture_output=True,
-            )
-            .stdout.decode("utf-8")
-            .strip()
-        )
-    user = [
-        f"username={user_name}",
-        f"password={user_password}",
-    ]
-
-    return user
-
-
 def op_add_server(
     server: dict,
-    user_name: str,
-    user_password: str,
-    create_user: bool = False,
     dry_run: bool = False,
 ):
     """Add server to 1Password
 
     Args:
         server (dict): Server to add
-        user_name (str): Username
-        user_password (str): Password
-        create_user (bool): Create user in 1Password. Defaults to False.
         dry_run (bool): Dry run (don't actually create anything). Defaults to False.
     """
     ips = []
@@ -131,11 +98,6 @@ def op_add_server(
         ips.append(f"IPv4 {i}.domain[URL]={ip['domain']}")
 
     ips.append(f"IPv6.ip address[URL]={server['ipv6'][0]['value']}")
-
-    if create_user:
-        user = new_user(user_name, user_password)
-    else:
-        user = []
 
     command = [
         "op",
@@ -151,7 +113,6 @@ def op_add_server(
         "--tags=aeza1password",
     ]
     command += ips
-    command += user
 
     if dry_run:
         logging.info(f"Dry run: {command}")
@@ -296,7 +257,6 @@ def main(  # noqa C901
         logging.info(f"Processing server {server['name']}")
         op_add_server(
             server=server,
-            create_user=False,
             dry_run=dry_run,
         )
 
