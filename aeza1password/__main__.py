@@ -173,13 +173,27 @@ def aeza_get_services(api_key: str) -> dict:
 
 
 def setup_logging(debug: bool):
+    """Setup logging.
+
+    Args:
+        debug (bool): Enable debug logging.
+    """
     logging.basicConfig(
         format="%(levelname)s:%(message)s",
         level=logging.DEBUG if debug else logging.INFO,
     )
 
 
-def load_api_keys(env: bool, api_keys: list):
+def load_api_keys(env: bool, api_keys: list) -> List[str]:
+    """Load API keys from environment or prompt for them.
+
+    Args:
+        env (bool): Load configuration from .aeza1password.env file or environment.
+        api_keys (list): List of API keys.
+
+    Returns:
+        List[str]: List of API keys
+    """
     if env and api_keys:
         logging.error("Cannot use --env and pass API keys")
         sys.exit(1)
@@ -198,7 +212,15 @@ def load_api_keys(env: bool, api_keys: list):
     return api_keys
 
 
-def process_servers(api_keys: list):
+def process_servers(api_keys: list) -> List[Server]:
+    """Process servers from aeza.net.
+
+    Args:
+        api_keys (list): List of API keys
+
+    Returns:
+        List[Server]: List of servers
+    """
     servers_total = []
     for i, api_key in enumerate(api_keys):
         logging.debug(f"Processing API key {i + 1}/{len(api_keys)}")
@@ -239,7 +261,14 @@ def process_servers(api_keys: list):
     return servers_total
 
 
-def add_servers(servers_total: list, dry_run: bool, api_keys: List[str] = None):
+def add_servers(servers_total: list, dry_run: bool, api_keys: List[str] = None) -> None:
+    """Add servers to 1Password.
+
+    Args:
+        servers_total (list): List of servers to add.
+        dry_run (bool): Dry run (don't actually create anything).
+        api_keys (List[str]): List of API keys. Defaults to None.
+    """
     if not servers_total:
         logging.error("No servers found")
         sys.exit(1)
@@ -287,7 +316,7 @@ def main(
     env: bool,
     api_keys: list,
 ):
-    """aeza1password — CLI tool for syncing servers from aeza.net to 1password\f
+    """aeza1password — CLI tool for syncing servers from aeza.net to 1password.\f
 
     Args:
         dry_run (bool): Dry run (don't actually create anything).
