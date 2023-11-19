@@ -108,6 +108,8 @@ class Server:
         service_id (int): Aeza service id
         name (str): Server name
         ip_address (List[IP_address]): List of IP addresses
+        admin_username (str): Admin username
+        admin_password (str): Admin password
         location (Location): Location
         os (str): Operating system
         cpu (str): CPU
@@ -118,6 +120,8 @@ class Server:
     service_id: int
     name: str
     ip_address: List[IP_address]
+    admin_username: str
+    admin_password: str
     location: Location
     os: str
     cpu: str
