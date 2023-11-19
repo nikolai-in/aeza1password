@@ -209,23 +209,6 @@ def aeza_get_services(api_key: str) -> dict:
 @click.command()
 @click.version_option()
 @click.option(
-    "--create-user",
-    is_flag=True,
-    default=False,
-    help="Create new server user in 1Password",
-)
-@click.option(
-    "--user-name",
-    default=getenv("USER"),
-    help="username for use with --create-user",
-)
-@click.password_option(
-    "--user-password",
-    help="single password for on all servers, option for use with --create-user",
-    default="",
-    prompt_required=False,
-)
-@click.option(
     "--dry-run",
     is_flag=True,
     default=False,
@@ -246,9 +229,6 @@ def aeza_get_services(api_key: str) -> dict:
 )
 @click.argument("api_keys", nargs=-1)
 def main(  # noqa C901
-    create_user: bool,
-    user_name: str,
-    user_password: str,
     dry_run: bool,
     debug: bool,
     env: bool,
@@ -257,9 +237,6 @@ def main(  # noqa C901
     """A CLI tool for syncing servers from aeza.net to 1password\f
 
     Args:
-        create_user (bool): Create new server user in 1Password
-        user_name (str): username for use with --create-user
-        user_password (str): single password for on all servers, option for use with --create-user
         dry_run (bool): Dry run (don't actually create anything)
         debug (bool): Enable debug logging
         env (bool): Load configuration from .env file or environment
@@ -319,10 +296,8 @@ def main(  # noqa C901
         logging.info(f"Processing server {server['name']}")
         op_add_server(
             server=server,
-            create_user=create_user,
+            create_user=False,
             dry_run=dry_run,
-            user_name=user_name,
-            user_password=user_password,
         )
 
 
