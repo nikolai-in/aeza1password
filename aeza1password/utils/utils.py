@@ -1,4 +1,4 @@
-"""Module to convert aeza's OS id to OS names"""
+"""Utility functions and classes for aeza1password"""
 from dataclasses import dataclass
 
 
