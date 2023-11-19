@@ -123,7 +123,7 @@ class Server:
     admin_username: str
     admin_password: str
     location: Location
-    os: str
+    os: OperatingSystem
     cpu: str
     ram: str
     storage: str
