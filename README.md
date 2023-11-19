@@ -18,15 +18,14 @@ python aeza1password --help
 ```text
 Usage: aeza1password [OPTIONS] [API_KEYS]...
 
-  A CLI tool for syncing servers from aeza.net to 1password
+  aeza1password — CLI tool for syncing servers from aeza.net to 1password
 
 Options:
-  --version      Show the version and exit.
-  --create-user  Create new server user in 1Password
-  --dry-run      Dry run (don't actually create anything)
-  --debug        Enable debug logging
-  -e, --env      Load configuration from .env file or environment
-  --help         Show this message and exit.
+  --version  Show the version and exit.
+  --dry-run  Dry run (don't actually create anything).
+  --debug    Enable debug logging.
+  -e, --env  Load configuration from .aeza1password.env file or environment.
+  --help     Show this message and exit.
 ```
 
 ## Trademark Disclaimer
