@@ -111,9 +111,9 @@ def server_to_op(server: Server, vault: str = "aeza") -> List[str]:
 
     ip_addresses = []
     for i, ip in enumerate(server.ip_address):
-        ip_addresses.append(f"IP addresses.ip address {i}[text]={ip.address}")
+        ip_addresses.append(f"IP addresses.ip address {i + 1}[text]={ip.address}")
         if ip.domain:
-            ip_addresses.append(f"IP addresses.domain {i}[text]={ip.domain}")
+            ip_addresses.append(f"IP addresses.domain {i + 1}[text]={ip.domain}")
 
     return [
         "op",
