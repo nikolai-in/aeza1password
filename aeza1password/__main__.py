@@ -11,20 +11,9 @@ import click
 import requests
 from dotenv import load_dotenv
 
-from aeza1password.utils import Server
+from aeza1password.utils import IP_address, Location, OperatingSystem, Server
 
 AEZA_ENDPOINT = "https://my.aeza.net/api"
-
-AEZA_LOCATIONS = {
-    "us": "🇺🇸",
-    "at": "🇦🇹",
-    "fr": "🇫🇷",
-    "de": "🇩🇪",
-    "nl": "🇳🇱",
-    "se": "🇸🇪",
-    "fi": "🇫🇮",
-    "ru": "🇷🇺",
-}
 
 
 def op_check_for_cli():
@@ -86,36 +75,16 @@ def op_create_vault(vault: str):
 
 
 def op_add_server(
-    server: dict,
+    server: Server,
     dry_run: bool = False,
 ):
     """Add server to 1Password
 
     Args:
-        server (dict): Server to add
+        server (Server): Server to add
         dry_run (bool): Dry run (don't actually create anything). Defaults to False.
     """
-    ips = []
-    for i, ip in enumerate(server["ips"]):
-        ips.append(f"IPv4 {i}.ip address[URL]={ip['value']}")
-        ips.append(f"IPv4 {i}.domain[URL]={ip['domain']}")
-
-    ips.append(f"IPv6.ip address[URL]={server['ipv6'][0]['value']}")
-
-    command = [
-        "op",
-        "item",
-        "create",
-        "--category=server",
-        f"--title={server['name']} {AEZA_LOCATIONS[server['locationCode']]}",
-        "--vault=aeza",
-        f"ssh[URL]=ssh://{server['ip']}",
-        f"Admin Console.admin console username[text]={server['parameters']['username']}",
-        f"Admin Console.console password={server['secureParameters']['data']['password']}",
-        f"Admin Console.billing panel URL[URL]=https://my.aeza.net/services/{server['id']}",
-        "--tags=aeza1password",
-    ]
-    command += ips
+    command = server_to_op(server)
 
     if dry_run:
         logging.info(f"Dry run: {command}")
@@ -268,15 +237,35 @@ def main(  # noqa C901
         if services.get("error"):
             logging.info(f"Skipping API key {i + 1} due to error")
             continue
-        servers_i = [
-            item
-            for item in services["data"]["items"]
-            if item["product"]["type"] == "vps"
-        ]
-        if len(servers_i) == 0:
+        server_on_api_key = []
+        for item in services["data"]["items"]:
+            if item["product"]["type"] != "vps":
+                continue
+
+            ips = [
+                IP_address(address=ip["value"], domain=ip.get("domain", None))
+                for ip in item["ips"] + item["ipv6"]
+            ]
+
+            server = Server(
+                service_id=item["id"],
+                name=item["name"],
+                ip_address=ips,
+                admin_username=item["parameters"]["username"],
+                admin_password=item["secureParameters"]["data"]["password"],
+                location=Location(item["locationCode"]),
+                os=OperatingSystem(item["parameters"]["os"]),
+                cpu=item["summaryConfiguration"]["cpu"]["count"],
+                ram=item["summaryConfiguration"]["ram"]["count"],
+                storage=item["summaryConfiguration"]["rom"]["count"],
+                email=item["parameters"]["panelUsername"],
+            )
+            server_on_api_key.append(server)
+
+        if len(server_on_api_key) == 0:
             logging.warning(f"No servers found for API key {i + 1}")
-        logging.info(f"Found {len(servers_i)} servers for API key {i + 1}")
-        servers_total += servers_i
+        logging.info(f"Found {len(server_on_api_key)} servers for API key {i + 1}")
+        servers_total += server_on_api_key
 
     if not servers_total:
         logging.error("No servers found")
@@ -290,7 +279,7 @@ def main(  # noqa C901
         op_create_vault("aeza")
 
     for server in servers_total:
-        logging.info(f"Processing server {server['name']}")
+        logging.info(f"Processing server {server.name}")
         op_add_server(
             server=server,
             dry_run=dry_run,
