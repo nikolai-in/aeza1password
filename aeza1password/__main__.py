@@ -265,20 +265,20 @@ def add_servers(servers_total: list, dry_run: bool, api_keys: List[str] = None):
     "--dry-run",
     is_flag=True,
     default=False,
-    help="Dry run (don't actually create anything)",
+    help="Dry run (don't actually create anything).",
 )
 @click.option(
     "--debug",
     is_flag=True,
     default=False,
-    help="Enable debug logging",
+    help="Enable debug logging.",
 )
 @click.option(
     "-e",
     "--env",
     is_flag=True,
     default=False,
-    help="Load configuration from .aeza1password.env file or environment",
+    help="Load configuration from .aeza1password.env file or environment.",
 )
 @click.argument("api_keys", nargs=-1)
 def main(
@@ -287,6 +287,14 @@ def main(
     env: bool,
     api_keys: list,
 ):
+    """aeza1password — CLI tool for syncing servers from aeza.net to 1password\f
+
+    Args:
+        dry_run (bool): Dry run (don't actually create anything).
+        debug (bool): Enable debug logging.
+        env (bool): Load configuration from .aeza1password.env file or environment.
+        api_keys (list): List of API keys.
+    """
     setup_logging(debug)
     api_keys = load_api_keys(env, api_keys)
     servers_total = process_servers(api_keys)
