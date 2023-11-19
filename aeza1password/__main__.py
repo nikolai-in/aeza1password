@@ -172,52 +172,18 @@ def aeza_get_services(api_key: str) -> dict:
     return response
 
 
-@click.command()
-@click.version_option()
-@click.option(
-    "--dry-run",
-    is_flag=True,
-    default=False,
-    help="Dry run (don't actually create anything)",
-)
-@click.option(
-    "--debug",
-    is_flag=True,
-    default=False,
-    help="Enable debug logging",
-)
-@click.option(
-    "-e",
-    "--env",
-    is_flag=True,
-    default=False,
-    help="Load configuration from .env file or environment",
-)
-@click.argument("api_keys", nargs=-1)
-def main(  # noqa C901
-    dry_run: bool,
-    debug: bool,
-    env: bool,
-    api_keys: list,
-):
-    """A CLI tool for syncing servers from aeza.net to 1password\f
-
-    Args:
-        dry_run (bool): Dry run (don't actually create anything)
-        debug (bool): Enable debug logging
-        env (bool): Load configuration from .env file or environment
-        api_keys (list): List of API keys
-    """
+def setup_logging(debug: bool):
     logging.basicConfig(
         format="%(levelname)s:%(message)s",
         level=logging.DEBUG if debug else logging.INFO,
     )
 
+
+def load_api_keys(env: bool, api_keys: list):
     if env and api_keys:
         logging.error("Cannot use --env and pass API keys")
         sys.exit(1)
 
-    logging.debug("Starting aeza1password")
     if env:
         api_keys = load_config()
         if not api_keys:
@@ -229,8 +195,11 @@ def main(  # noqa C901
             "Please enter your API keys (comma separated)", type=str
         ).split(",")
 
-    servers_total = []
+    return api_keys
 
+
+def process_servers(api_keys: list):
+    servers_total = []
     for i, api_key in enumerate(api_keys):
         logging.debug(f"Processing API key {i + 1}/{len(api_keys)}")
         services = aeza_get_services(api_key)
@@ -267,6 +236,10 @@ def main(  # noqa C901
         logging.info(f"Found {len(server_on_api_key)} servers for API key {i + 1}")
         servers_total += server_on_api_key
 
+    return servers_total
+
+
+def add_servers(servers_total: list, dry_run: bool, api_keys: List[str] = None):
     if not servers_total:
         logging.error("No servers found")
         sys.exit(1)
@@ -275,7 +248,7 @@ def main(  # noqa C901
         f"Found {len(servers_total)} servers in total for {len(api_keys)} API keys"
     )
 
-    if not op_check_for_vault("aeza") and not dry_run:
+    if not dry_run and not op_check_for_vault("aeza"):
         op_create_vault("aeza")
 
     for server in servers_total:
@@ -284,6 +257,40 @@ def main(  # noqa C901
             server=server,
             dry_run=dry_run,
         )
+
+
+@click.command()
+@click.version_option()
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    default=False,
+    help="Dry run (don't actually create anything)",
+)
+@click.option(
+    "--debug",
+    is_flag=True,
+    default=False,
+    help="Enable debug logging",
+)
+@click.option(
+    "-e",
+    "--env",
+    is_flag=True,
+    default=False,
+    help="Load configuration from .env file or environment",
+)
+@click.argument("api_keys", nargs=-1)
+def main(  # noqa C901
+    dry_run: bool,
+    debug: bool,
+    env: bool,
+    api_keys: list,
+):
+    setup_logging(debug)
+    api_keys = load_api_keys(env, api_keys)
+    servers_total = process_servers(api_keys)
+    add_servers(servers_total, dry_run, api_keys)
 
 
 if __name__ == "__main__":
