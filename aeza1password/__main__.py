@@ -331,12 +331,6 @@ def add_servers(
     help="Vault to add servers to.",
     metavar="",  # Hide default value in help cus it's ugly
 )
-@click.option(
-    "--iterm2-pm",
-    is_flag=True,
-    default=False,
-    help="Add servers logins to iTerm2 password manager instead.",
-)
 @click.help_option("-?", "-h", "--help")
 @click.argument("api_keys", nargs=-1)
 def main(
