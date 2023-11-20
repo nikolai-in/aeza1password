@@ -1,6 +1,6 @@
 <h1 align="center">aeza1password</h1>
 <blockquote align="center">
-  A script for syncing servers from aeza.net to 1password
+  A script for syncing servers from Aeza.net to 1Password
 </blockquote>
 
 <p align="center">
