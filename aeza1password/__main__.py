@@ -340,7 +340,8 @@ def main(
     vault: str,
     api_keys: list,
 ):
-    """aeza1password — CLI tool for syncing servers from aeza.net to 1password.\f
+    """aeza1password — CLI tool for syncing servers from aeza.net to 1password.
+    Made by nikolai-in with love\f
 
     Args:
         dry_run (bool): Dry run (don't actually create anything).
