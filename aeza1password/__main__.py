@@ -303,6 +303,40 @@ def add_servers(
         )
 
 
+def add_to_iterm2_pm(servers: List[Server], dry_run: bool = False):
+    """A little extra for iTerm2 users.
+    Add servers login details to iTerm2 password manager.
+
+    Args:
+        servers (List[Server]): List of servers.
+        dry_run (bool): Dry run (don't actually create anything). Defaults to False.
+    """
+    for server in servers:
+        command = [
+            "security",
+            "add-generic-password",
+            "-a",
+            f"{server.name} {server.location.flag} — {server.admin_username}",
+            "-s",
+            "iTerm2",
+            "-w",
+            server.admin_password,
+            "-T",
+            "/Applications/iTerm.app",
+        ]
+
+        if dry_run:
+            logging.info(f"Dry run: {command}")
+            continue
+
+        logging.debug(f"Dry run: {command}")
+
+        subprocess.run(  # nosec B603, B607
+            command,
+            capture_output=True,
+        )
+
+
 @click.command()
 @click.version_option()
 @click.option(
@@ -322,7 +356,7 @@ def add_servers(
     "--env",
     is_flag=True,
     default=False,
-    help="Load configuration from .aeza1password.env file or environment.",
+    help="Load configuration from .aeza1password.env file or env.",
 )
 @click.option(
     "-v",
@@ -331,6 +365,12 @@ def add_servers(
     help="Vault to add servers to.",
     metavar="",  # Hide default value in help cus it's ugly
 )
+@click.option(
+    "--iterm2-pm",
+    is_flag=True,
+    default=False,
+    help="Add servers logins to iTerm2 password manager instead.",
+)
 @click.help_option("-?", "-h", "--help")
 @click.argument("api_keys", nargs=-1)
 def main(
@@ -338,6 +378,7 @@ def main(
     debug: bool,
     env: bool,
     vault: str,
+    iterm2_pm: bool,
     api_keys: list,
 ):
     """aeza1password — CLI tool for syncing servers from aeza.net to 1password.
@@ -348,12 +389,16 @@ def main(
         debug (bool): Enable debug logging.
         env (bool): Load configuration from .aeza1password.env file or environment.
         vault (str): Vault to add servers to.
+        iterm2_pm (bool): Add servers login details to iTerm2 password manager instead.
         api_keys (list): List of API keys.
     """
     setup_logging(debug)
     api_keys = load_api_keys(env, api_keys)
     servers_total = process_servers(api_keys)
-    add_servers(servers_total, dry_run, api_keys, vault)
+    if iterm2_pm:
+        add_to_iterm2_pm(servers_total, dry_run)
+    else:
+        add_servers(servers_total, dry_run, api_keys, vault)
 
 
 if __name__ == "__main__":
