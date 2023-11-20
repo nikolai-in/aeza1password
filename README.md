@@ -13,6 +13,8 @@ This is a fan made project, **NOT** affiliated with either Aeza International Lt
 
 ## Usage/Examples
 
+https://github.com/nikolai-in/aeza1password/assets/87097942/928d64f3-5d15-4755-adaa-498adf232c81
+
 ```bash
 git clone && cd aeza1password && \
 pip install -r requirements.txt
