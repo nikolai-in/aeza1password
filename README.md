@@ -1,6 +1,6 @@
 <h1 align="center">aeza1password</h1>
 <blockquote align="center">
-  Скрипт синхронизации серверов Aeza для 1Password
+  Скрипт синхронизации серверов Aeza в 1Password
 </blockquote>
 
 <p align="center">
