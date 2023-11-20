@@ -88,17 +88,15 @@ def op_create_vault(vault: str):
         raise Exception(f"1Password vault {vault} not created")
 
 
-def op_add_server(
-    server: Server,
-    dry_run: bool = False,
-):
+def op_add_server(server: Server, dry_run: bool = False, vault: str = "aeza"):
     """Add server to 1Password.
 
     Args:
         server (Server): Server to add.
         dry_run (bool): Dry run (don't actually create anything). Defaults to False.
+        vault (str): Vault to add server to. Defaults to "aeza".
     """
-    command = server_to_op(server)
+    command = server_to_op(server, vault)
 
     if dry_run:
         logging.info(f"Dry run: {command}")
@@ -276,13 +274,16 @@ def process_servers(api_keys: list) -> List[Server]:
     return servers_total
 
 
-def add_servers(servers_total: list, dry_run: bool, api_keys: List[str] = None) -> None:
+def add_servers(
+    servers_total: list, dry_run: bool, api_keys: List[str] = None, vault: str = "aeza"
+) -> None:
     """Add servers to 1Password.
 
     Args:
         servers_total (list): List of servers to add.
         dry_run (bool): Dry run (don't actually create anything).
         api_keys (List[str]): List of API keys. Defaults to None.
+        vault (str): Vault to add servers to. Defaults to "aeza".
     """
     if not servers_total:
         log_error_and_exit("No servers found")
@@ -291,8 +292,8 @@ def add_servers(servers_total: list, dry_run: bool, api_keys: List[str] = None) 
         f"Found {len(servers_total)} servers in total for {len(api_keys)} API keys"
     )
 
-    if not dry_run and not op_check_for_vault("aeza"):
-        op_create_vault("aeza")
+    if not dry_run and not op_check_for_vault(vault):
+        op_create_vault(vault)
 
     for server in servers_total:
         logging.info(f"Processing server {server.name}")
@@ -323,11 +324,18 @@ def add_servers(servers_total: list, dry_run: bool, api_keys: List[str] = None) 
     default=False,
     help="Load configuration from .aeza1password.env file or environment.",
 )
+@click.option(
+    "-v",
+    "--vault",
+    default="aeza",
+    help="Vault to add servers to.",
+)
 @click.argument("api_keys", nargs=-1)
 def main(
     dry_run: bool,
     debug: bool,
     env: bool,
+    vault: str,
     api_keys: list,
 ):
     """aeza1password — CLI tool for syncing servers from aeza.net to 1password.\f
@@ -336,12 +344,13 @@ def main(
         dry_run (bool): Dry run (don't actually create anything).
         debug (bool): Enable debug logging.
         env (bool): Load configuration from .aeza1password.env file or environment.
+        vault (str): Vault to add servers to.
         api_keys (list): List of API keys.
     """
     setup_logging(debug)
     api_keys = load_api_keys(env, api_keys)
     servers_total = process_servers(api_keys)
-    add_servers(servers_total, dry_run, api_keys)
+    add_servers(servers_total, dry_run, api_keys, vault)
 
 
 if __name__ == "__main__":
