@@ -1,17 +1,17 @@
 <h1 align="center">aeza1password</h1>
 <blockquote align="center">
-  A script for syncing servers from Aeza.net to 1Password
+  Скрипт синхронизации серверов Aeza для 1Password
 </blockquote>
 
 <p align="center">
   <img src="https://github.com/nikolai-in/aeza1password/blob/master/aeza1password.png?raw=true" alt="Sublime's custom image"/>
 </p>
 
-## Disclaimer
+## Дисклеймер
 
-This is a fan made project, **NOT** affiliated with either Aeza International Ltd or 1Password.
+Это фан-проект, **НЕ** связанный ни с Aeza International Ltd, ни с 1Password.
 
-## Usage/Examples
+## Использование
 
 https://github.com/nikolai-in/aeza1password/assets/87097942/928d64f3-5d15-4755-adaa-498adf232c81
 
@@ -34,9 +34,9 @@ Options:
   --help     Show this message and exit.
 ```
 
-## Trademark Disclaimer
+## Отказ от ответственности за использование товарных знаков
 
-All trademarks, logos and brand names are the property of their respective owners. All company, product and service names used in this website are for identification purposes only. Use of these names,trademarks and brands does not imply endorsement.
+Все товарные знаки, логотипы и названия торговых марок являются собственностью соответствующих владельцев. Все названия компаний, продуктов и услуг, используемые на данном сайте, предназначены только для идентификации. Использование этих названий, торговых марок и брендов не подразумевает их одобрения.
 
 - [Aeza.net](https://aeza.net/)
 - [1Password](https://1password.com)
