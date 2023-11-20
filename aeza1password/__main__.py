@@ -329,7 +329,9 @@ def add_servers(
     "--vault",
     default="aeza",
     help="Vault to add servers to.",
+    metavar="",  # Hide default value in help cus it's ugly
 )
+@click.help_option("-?", "-h", "--help")
 @click.argument("api_keys", nargs=-1)
 def main(
     dry_run: bool,
